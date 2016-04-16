@@ -11,6 +11,7 @@ import UIKit
 class QuiestionViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet var imageHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
@@ -138,15 +139,68 @@ class QuiestionViewController: UIViewController {
     }
     
     func updateViews(){
-        //настроили изображение
-        let image = currentQuestion?.image
-        imageView.image = image
+
+
+        updateImage()
+
         
         //задали вопрос
-        label.text = currentQuestion?.question
+        updateLable()
+
         
         //перезаполнить tableView
         tableView.reloadData()
+    }
+    
+    func updateLable(){
+
+        UIView.animateWithDuration(0.4, delay: 0, options: [UIViewAnimationOptions.CurveEaseIn], animations: {self.label.transform = CGAffineTransformMakeTranslation(self.view.frame.width, 0)}) { (_) in
+            self.label.text = self.currentQuestion?.question
+            self.label.transform = CGAffineTransformMakeTranslation(-self.view.frame.width,0)
+            UIView.animateWithDuration(0.4, delay: 0, options: [.CurveEaseOut], animations:
+                {
+                self.label.transform = CGAffineTransformIdentity
+                }, completion: nil)
+        
+        }
+
+       //задали вопрос
+        label.text = currentQuestion?.question
+    }
+    
+    func updateImage(){
+        //1 Уменьшим высоту картинки до 0
+        UIView.animateWithDuration(0.5, animations: {
+            self.imageHeightConstraint.constant = 0
+            self.view.layoutIfNeeded()
+            }) { _ in
+                //настроили изображение
+                //2 Заменим изображение
+                let image = self.currentQuestion?.image
+                self.imageView.image = image
+                
+               //3 Вернем высоту обратно
+
+                
+               UIView.animateWithDuration(2,
+                delay: 0,
+                usingSpringWithDamping: 0.3,
+                initialSpringVelocity: 7,
+                options: [],
+                animations: {self.imageHeightConstraint.constant = 140
+                self.view.layoutIfNeeded()},
+                completion: nil)
+
+        }
+        
+        
+
+       
+        
+        
+        //настроили изображение
+        let image = currentQuestion?.image
+        imageView.image = image
     }
     
     //MARK: -
